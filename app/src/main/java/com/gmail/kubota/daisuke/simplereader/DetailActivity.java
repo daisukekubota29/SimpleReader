@@ -9,7 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
 import com.gmail.kubota.daisuke.simplereader.model.RssObject;
+import com.gmail.kubota.daisuke.simplereader.network.BitmapCache;
 
 /**
  *
@@ -19,7 +24,11 @@ public class DetailActivity extends ActionBarActivity {
 
     public static final String BUNDLE_RSS_OBJECT = "RSS_OBJECT";
 
+    public static final Object VOLLEY_TAG = new Object();
+
     private String mLink;
+
+    private RequestQueue mQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +40,9 @@ public class DetailActivity extends ActionBarActivity {
         }
 
         setContentView(R.layout.activity_detail);
+
+        mQueue = Volley.newRequestQueue(this);
+
         RssObject rss = (RssObject) getIntent().getSerializableExtra(BUNDLE_RSS_OBJECT);
 
         TextView titleTextView = (TextView) findViewById(R.id.detail_title_text_view);
@@ -51,6 +63,16 @@ public class DetailActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.image_view);
+        imageView.setImageUrl(rss.getImage(), new ImageLoader(mQueue, new BitmapCache()));
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mQueue.cancelAll(VOLLEY_TAG);
     }
 
     @Override
@@ -61,4 +83,6 @@ public class DetailActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }
