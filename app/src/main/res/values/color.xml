@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="common_white">#ffffff</color>
-    <color name="common_red">#cc4400</color>
+    <color name="common_red">#cc0044</color>
     <color name="common_blue">#0044cc</color>
+    <color name="common_green">#44cc00</color>
+    <color name="common_purple">#cc00cc</color>
     <color name="common_gray">#cccccc</color>
 </resources>

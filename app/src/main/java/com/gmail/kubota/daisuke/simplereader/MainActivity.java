@@ -1,6 +1,7 @@
 package com.gmail.kubota.daisuke.simplereader;
 
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +37,8 @@ public class MainActivity extends ActionBarActivity {
 
     ArrayList<RssObject> mList = new ArrayList<>();
 
+    SwipeRefreshLayout mRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +72,22 @@ public class MainActivity extends ActionBarActivity {
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.putExtra(DetailActivity.BUNDLE_RSS_OBJECT, rss);
                 startActivity(intent);
+            }
+        });
+
+        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        // ローティング色
+        mRefreshLayout.setColorSchemeResources(
+                R.color.common_red,
+                R.color.common_green,
+                R.color.common_blue,
+                R.color.common_purple);
+        // 背景色
+        mRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.common_gray);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestRss();
             }
         });
     }
@@ -107,6 +126,8 @@ public class MainActivity extends ActionBarActivity {
                             getString(R.string.main_response_parse_error),
                             Toast.LENGTH_LONG).show();
                 }
+                // 更新が終了したらインジケータ非表示
+                mRefreshLayout.setRefreshing(false);
             }
         };
         Response.ErrorListener errorListener = new Response.ErrorListener() {
@@ -117,6 +138,8 @@ public class MainActivity extends ActionBarActivity {
                         getString(R.string.main_response_error),
                         Toast.LENGTH_LONG);
                 toast.show();
+                // 更新が終了したらインジケータ非表示
+                mRefreshLayout.setRefreshing(false);
             }
         };
         JsonObjectRequest request = new JsonObjectRequest(
